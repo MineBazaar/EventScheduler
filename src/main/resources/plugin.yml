@@ -1,4 +1,9 @@
 name: EventScheduler
 version: '1.0-SNAPSHOT'
 main: com.notpatch.eventScheduler.EventScheduler
-api-version: '1.21'
+softdepend: [PlaceholderAPI]
+
+commands:
+  eventscheduler:
+    permission: eventscheduler.admin
+    description: Reload config.

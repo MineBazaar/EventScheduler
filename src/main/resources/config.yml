@@ -1,0 +1,30 @@
+#Dfault date format is "HH:mm:ss"
+DateFormat: "HH:mm:ss"
+UsePlaceholderAPI: true
+
+#Available placeholders
+#%currentEvent%
+
+Tasks:
+  0:
+    #Event and Duration for placeholders
+    #If you don't want to use, you can leave blank
+    #Duration is second
+    Event: "Envoy"
+    Duration: 300
+    Time: "12:00:30"
+    #You can type "Every" for everyday
+    #MON, TUE, WED, THU, FRI, SAT, SUN
+    Day: "Every"
+    #Without "/"
+    Commands:
+      - ""
+      - ""
+  1:
+    Event: "Envoy"
+    Duration: 300
+    Time: "11:05"
+    Day: "TUE"
+    Commands:
+      - ""
+      - ""
