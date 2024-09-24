@@ -1,6 +1,7 @@
 #Dfault date format is "HH:mm:ss"
 DateFormat: "HH:mm:ss"
 UsePlaceholderAPI: true
+MinPlayerMessage: "For event %eventName% to start a minimum of %playerAmount% players must be online."
 
 #Available placeholders
 #%currentEvent%
@@ -16,6 +17,7 @@ Tasks:
     #You can type "Every" for everyday
     #MON, TUE, WED, THU, FRI, SAT, SUN
     Day: "Every"
+    MinPlayer: 10
     #Without "/"
     Commands:
       - ""
@@ -25,6 +27,7 @@ Tasks:
     Duration: 300
     Time: "11:05"
     Day: "TUE"
+    MinPlayer: 20
     Commands:
       - ""
       - ""

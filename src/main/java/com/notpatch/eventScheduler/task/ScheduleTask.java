@@ -41,8 +41,9 @@ public class ScheduleTask extends BukkitRunnable {
 
         for (String s : tasksSection.getKeys(false)) {
             String day = config.getString("Tasks." + s + ".Day");
-            String event = config.getString("Tasks." + s + ".Event");
+            String event = StringUtil.colorized(config.getString("Tasks." + s + ".Event"));
             int duration = config.getInt("Tasks." + s + ".Duration", -1);
+            int minPlayer = config.getInt("Tasks." + s + ".MinPlayer");
             String taskTime = config.getString("Tasks." + s + ".Time");
 
             if (day == null || event == null || duration == -1) {
@@ -51,6 +52,10 @@ public class ScheduleTask extends BukkitRunnable {
 
             if (taskTime != null && taskTime.equals(currentTime)) {
                 if (day.equalsIgnoreCase("Every") || dayFormat.format(new Date()).equals(day)) {
+                    if(Bukkit.getOnlinePlayers().size() < minPlayer){
+                        Bukkit.broadcastMessage(StringUtil.colorized(config.getString("MinPlayerMessage").replaceAll("%eventName%", event).replaceAll("%playerAmount%", String.valueOf(minPlayer))));
+                        return;
+                    }
                     currentTask = s;
                     currentEvent = event;
 
