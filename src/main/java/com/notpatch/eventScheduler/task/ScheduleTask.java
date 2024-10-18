@@ -46,6 +46,7 @@ public class ScheduleTask extends BukkitRunnable {
             int minPlayer = config.getInt("Tasks." + s + ".MinPlayer");
             String taskTime = config.getString("Tasks." + s + ".Time");
 
+
             if (day == null || event == null || duration == -1) {
                 continue;
             }
@@ -91,8 +92,6 @@ public class ScheduleTask extends BukkitRunnable {
     public void startRepeatingTask() {
         this.runTaskTimer(main, 0L, 1L);
     }
-
-
 
 
 }

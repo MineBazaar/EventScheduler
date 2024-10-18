@@ -19,11 +19,13 @@ public class CommandMain implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if(sender instanceof Player){
             Player p = (Player) sender;
+
             if(p.hasPermission("eventscheduler.admin")){
                 main.reloadConfig();
                 main.saveDefaultConfig();
                 main.saveConfig();
                 p.sendMessage("§eEvent Scheduler§7: §aConfig reloaded!");
+
             }
         }else{
             main.reloadConfig();

@@ -9,8 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class EventScheduler extends JavaPlugin {
 
+    private static EventScheduler instance;
+
     @Override
     public void onEnable() {
+        instance = this;
+
         saveConfig();
 
         if(usePlaceholderAPI()){
@@ -40,4 +44,7 @@ public final class EventScheduler extends JavaPlugin {
         return false;
     }
 
+    public static EventScheduler getInstance() {
+        return instance;
+    }
 }

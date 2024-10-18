@@ -5,6 +5,8 @@ MinPlayerMessage: "For event %eventName% to start a minimum of %playerAmount% pl
 
 #Available placeholders
 #%currentEvent%
+#%nextEvent%
+#%nextEventTime%
 
 Tasks:
   0:
@@ -17,11 +19,12 @@ Tasks:
     #You can type "Every" for everyday
     #MON, TUE, WED, THU, FRI, SAT, SUN
     Day: "Every"
-    MinPlayer: 10
+    MinPlayer: 0
     #Without "/"
     Commands:
       - ""
       - ""
+
   1:
     Event: "Envoy"
     Duration: 300
