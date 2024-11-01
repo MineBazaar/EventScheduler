@@ -1,4 +1,4 @@
-package com.notpatch.eventScheduler;
+package com.notpatch.eventScheduler.util;
 
 import com.notpatch.eventScheduler.task.ScheduleTask;
 import net.md_5.bungee.api.ChatColor;

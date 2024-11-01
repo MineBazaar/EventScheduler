@@ -1,36 +1,68 @@
-#Dfault date format is "HH:mm:ss"
+#Default date format is "HH:mm:ss"
 DateFormat: "HH:mm:ss"
 UsePlaceholderAPI: true
-MinPlayerMessage: "For event %eventName% to start a minimum of %playerAmount% players must be online."
+MinPlayerMessage: "#000000For event %eventName% to start a minimum of %playerAmount% players must be online."
+
+#Discord Webhook
+#When event started
+send-webhook: false
+#Discord Server Settings -> Integrations -> Webhooks -> Select or create new webhook -> Copy webhook url -> Paste
+webhook-url: ""
+webhook-avatarURL: ""
+webhook-content: "Test Content"
+webhook-embeds:
+  0:
+    description: "Test Description"
+    title: "Test Title"
+    field:
+      name: "TestName"
+      value: "TestValue"
+      inline: true
+    #RGB color, use # first
+    color: "#FFFFFF"
 
 #Available placeholders
 #%currentEvent%
 #%nextEvent%
 #%nextEventTime%
+#%nextEventCountdown%
 
 Tasks:
   0:
+    remaining:
+      active: false
+      time: "12:00:00"
+      commands:
+        - ""
     #Event and Duration for placeholders
     #If you don't want to use, you can leave blank
     #Duration is second
-    Event: "Envoy"
-    Duration: 300
-    Time: "12:00:30"
+    event: "Envoy"
+    duration: 300
+    time: "12:00:30"
     #You can type "Every" for everyday
     #MON, TUE, WED, THU, FRI, SAT, SUN
-    Day: "Every"
-    MinPlayer: 0
+    day: "Every"
+    #Play sound for every player
+    sound: "BLOCK_BELL_USE"
+    minPlayer: 0
     #Without "/"
-    Commands:
+    commands:
       - ""
       - ""
 
+
   1:
-    Event: "Envoy"
-    Duration: 300
-    Time: "11:05"
-    Day: "TUE"
-    MinPlayer: 20
-    Commands:
-      - ""
-      - ""
+    remaining:
+      active: true
+      time: "12:00:00"
+      commands:
+        - "say 30 seconds before Envoy Event!"
+    event: "Envoy"
+    duration: 300
+    time: "12:00:30"
+    day: "TUE"
+    sound: "BLOCK_BELL_USE"
+    minPlayer: 15
+    commands:
+      - "say Hello players!"

@@ -1,8 +1,10 @@
 package com.notpatch.eventScheduler.task;
 
 import com.notpatch.eventScheduler.EventScheduler;
-import com.notpatch.eventScheduler.StringUtil;
+import com.notpatch.eventScheduler.util.DiscordUtil;
+import com.notpatch.eventScheduler.util.StringUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -19,7 +21,6 @@ public class ScheduleTask extends BukkitRunnable {
     private final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE");
 
     public static String currentEvent = "";
-    private String currentTask;
 
     public ScheduleTask(EventScheduler main){
         this.main = main;
@@ -40,24 +41,44 @@ public class ScheduleTask extends BukkitRunnable {
         String currentTime = timeFormat.format(new Date());
 
         for (String s : tasksSection.getKeys(false)) {
-            String day = config.getString("Tasks." + s + ".Day");
-            String event = StringUtil.colorized(config.getString("Tasks." + s + ".Event"));
-            int duration = config.getInt("Tasks." + s + ".Duration", -1);
-            int minPlayer = config.getInt("Tasks." + s + ".MinPlayer");
-            String taskTime = config.getString("Tasks." + s + ".Time");
+            String day = config.getString("Tasks." + s + ".day");
+            String sound = config.getString("Tasks." + s + ".sound");
+            String event = StringUtil.colorized(config.getString("Tasks." + s + ".event"));
+            int duration = config.getInt("Tasks." + s + ".duration", -1);
+            int minPlayer = config.getInt("Tasks." + s + ".minPlayer");
+            String taskTime = config.getString("Tasks." + s + ".time");
+            String remainingTime = config.getString("Tasks." + s + ".remaining.time");
 
 
             if (day == null || event == null || duration == -1) {
                 continue;
             }
 
+            if(config.getBoolean("Tasks." + s + "remaining.active")) {
+                if (remainingTime != null && remainingTime.equals(currentTime)) {
+                    if (day.equalsIgnoreCase("Every") || dayFormat.format(new Date()).equals(day)) {
+                        if (Bukkit.getOnlinePlayers().size() < minPlayer) {
+                            return;
+                        }
+
+                        for (String command : config.getStringList("Tasks." + s + "remaining.commands")) {
+                            if (command == null || command.isEmpty()) {
+                                break;
+                            }
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), StringUtil.FormatString(command));
+                            break;
+                        }
+
+                    }
+                }
+            }
+
             if (taskTime != null && taskTime.equals(currentTime)) {
                 if (day.equalsIgnoreCase("Every") || dayFormat.format(new Date()).equals(day)) {
                     if(Bukkit.getOnlinePlayers().size() < minPlayer){
                         Bukkit.broadcastMessage(StringUtil.colorized(config.getString("MinPlayerMessage").replaceAll("%eventName%", event).replaceAll("%playerAmount%", String.valueOf(minPlayer))));
-                        return;
+                        break;
                     }
-                    currentTask = s;
                     currentEvent = event;
 
                     new BukkitRunnable() {
@@ -67,10 +88,17 @@ public class ScheduleTask extends BukkitRunnable {
                         }
                     }.runTaskLater(main, duration * 20L);
 
-                    for (String command : config.getStringList("Tasks." + s + ".Commands")) {
+                    for (String command : config.getStringList("Tasks." + s + ".commands")) {
                         if (command == null || command.isEmpty()) {
                             break;
                         }
+
+                        if(sound != null){
+                            Bukkit.getOnlinePlayers().stream().forEach( player -> {
+                                player.playSound(player.getLocation(), Sound.valueOf(sound), 1F, 1F);
+                            });
+                        }
+                        DiscordUtil.sendDiscordWebhook();
                         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), StringUtil.FormatString(command));
                         break;
                     }

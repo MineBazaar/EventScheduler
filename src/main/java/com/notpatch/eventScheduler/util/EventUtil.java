@@ -1,5 +1,6 @@
-package com.notpatch.eventScheduler;
+package com.notpatch.eventScheduler.util;
 
+import com.notpatch.eventScheduler.EventScheduler;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.text.ParseException;

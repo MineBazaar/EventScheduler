@@ -1,7 +1,7 @@
 package com.notpatch.eventScheduler.hook;
 
 import com.notpatch.eventScheduler.EventScheduler;
-import com.notpatch.eventScheduler.EventUtil;
+import com.notpatch.eventScheduler.util.EventUtil;
 import com.notpatch.eventScheduler.task.ScheduleTask;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -35,13 +35,14 @@ public class HookPlaceholderAPI extends PlaceholderExpansion {
             return ScheduleTask.currentEvent;
         }
         EventUtil eventUtil = new EventUtil(EventScheduler.getInstance());
-        Map<String, Long> nearestEvent = eventUtil.findNearestEvent();
-        if(params.equalsIgnoreCase("nextEvent")){
 
+        if(params.equalsIgnoreCase("nextEvent")){
+            Map<String, Long> nearestEvent = eventUtil.findNearestEvent();
             String event = nearestEvent.keySet().iterator().next();
             return event;
         }
-        if(params.equalsIgnoreCase("nextEventTime")){
+        if(params.equalsIgnoreCase("nextEventCountdown")){
+            Map<String, Long> nearestEvent = eventUtil.findNearestEvent();
             String event = nearestEvent.keySet().iterator().next();
             long timeRemaining = nearestEvent.get(event);
             // 564534378
@@ -55,6 +56,21 @@ public class HookPlaceholderAPI extends PlaceholderExpansion {
                     minute);
 
         }
+
+        /*if(params.equalsIgnoreCase("nextEventTime")){
+            Map<String, Long> nearestEvent = eventUtil.findNearestEvent();
+            String event = nearestEvent.keySet().iterator().next();
+            long timeRemaining = nearestEvent.get(event);
+            timeRemaining += new Date().getTime();
+
+            long h = timeRemaining / 1000 / 60 / 60;
+            timeRemaining = timeRemaining - h * 1000 * 60 * 60;
+            long m = timeRemaining / 1000 / 60;
+
+            return String.format("%d h, %d m",
+                    h,m);
+
+        }*/
         return "";
     }
 }

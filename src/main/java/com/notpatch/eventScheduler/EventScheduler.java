@@ -15,6 +15,7 @@ public final class EventScheduler extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        saveDefaultConfig();
         saveConfig();
 
         if(usePlaceholderAPI()){
