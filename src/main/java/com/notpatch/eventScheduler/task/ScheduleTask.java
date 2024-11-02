@@ -47,14 +47,14 @@ public class ScheduleTask extends BukkitRunnable {
             int duration = config.getInt("Tasks." + s + ".duration", -1);
             int minPlayer = config.getInt("Tasks." + s + ".minPlayer");
             String taskTime = config.getString("Tasks." + s + ".time");
-            String remainingTime = config.getString("Tasks." + s + ".remaining.time");
+            //String remainingTime = config.getString("Tasks." + s + ".remaining.time");
 
 
             if (day == null || event == null || duration == -1) {
                 continue;
             }
 
-            if(config.getBoolean("Tasks." + s + "remaining.active")) {
+            /*if(config.getBoolean("Tasks." + s + "remaining.active")) {
                 if (remainingTime != null && remainingTime.equals(currentTime)) {
                     if (day.equalsIgnoreCase("Every") || dayFormat.format(new Date()).equals(day)) {
                         if (Bukkit.getOnlinePlayers().size() < minPlayer) {
@@ -71,7 +71,7 @@ public class ScheduleTask extends BukkitRunnable {
 
                     }
                 }
-            }
+            }*/
 
             if (taskTime != null && taskTime.equals(currentTime)) {
                 if (day.equalsIgnoreCase("Every") || dayFormat.format(new Date()).equals(day)) {

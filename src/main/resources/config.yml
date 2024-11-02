@@ -29,11 +29,6 @@ webhook-embeds:
 
 Tasks:
   0:
-    remaining:
-      active: false
-      time: "12:00:00"
-      commands:
-        - ""
     #Event and Duration for placeholders
     #If you don't want to use, you can leave blank
     #Duration is second
