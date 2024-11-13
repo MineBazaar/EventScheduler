@@ -48,11 +48,7 @@ Tasks:
 
 
   1:
-    remaining:
-      active: true
-      time: "12:00:00"
-      commands:
-        - "say 30 seconds before Envoy Event!"
+
     event: "Envoy"
     duration: 300
     time: "12:00:30"

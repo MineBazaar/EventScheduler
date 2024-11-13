@@ -24,6 +24,7 @@ public class CommandMain implements CommandExecutor {
                 main.reloadConfig();
                 main.saveDefaultConfig();
                 main.saveConfig();
+                main.getTaskManager().loadTasks();
                 p.sendMessage("§eEvent Scheduler§7: §aConfig reloaded!");
 
             }
@@ -31,6 +32,7 @@ public class CommandMain implements CommandExecutor {
             main.reloadConfig();
             main.saveDefaultConfig();
             main.saveConfig();
+            main.getTaskManager().loadTasks();
             sender.sendMessage("§eEvent Scheduler§7: §aConfig reloaded!");
         }
         return false;
