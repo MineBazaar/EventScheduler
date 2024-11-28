@@ -1,5 +1,6 @@
 name: EventScheduler
-version: '2.5-SNAPSHOT'
+version: '2.5.1-SNAPSHOT'
+api-version: 1.16
 main: com.notpatch.eventScheduler.EventScheduler
 softdepend: [PlaceholderAPI]
 
