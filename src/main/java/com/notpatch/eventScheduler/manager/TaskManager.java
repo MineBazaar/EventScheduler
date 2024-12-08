@@ -13,11 +13,11 @@ public class TaskManager {
 
     private final HashMap<String, Task> tasks = new HashMap<>();
 
-    public TaskManager(EventScheduler main){
+    public TaskManager(EventScheduler main) {
         this.main = main;
     }
 
-    public void loadTasks(){
+    public void loadTasks() {
         tasks.clear();
         ConfigurationSection tasksSection = main.getConfig().getConfigurationSection("Tasks");
 
@@ -40,4 +40,9 @@ public class TaskManager {
     public HashMap<String, Task> getTasks() {
         return tasks;
     }
+
+    public Task getTask(String key) {
+        return tasks.get(key);
+    }
+
 }
