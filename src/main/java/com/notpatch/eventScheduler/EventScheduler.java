@@ -37,6 +37,7 @@ public final class EventScheduler extends JavaPlugin {
         getCommand("eventscheduler").setExecutor(new CommandMain(this));
         getCommand("events").setExecutor(new CommandEvent());
 
+        new UpdateChecker(this, 119693).checkForUpdate();
     }
 
     @Override

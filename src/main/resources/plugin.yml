@@ -1,5 +1,5 @@
 name: EventScheduler
-version: '2.5.2-SNAPSHOT'
+version: '2.6.2'
 api-version: 1.16
 main: com.notpatch.eventScheduler.EventScheduler
 softdepend: [ PlaceholderAPI ]
@@ -9,3 +9,4 @@ commands:
     permission: eventscheduler.admin
     description: Reload config.
   events:
+    description: List all events.

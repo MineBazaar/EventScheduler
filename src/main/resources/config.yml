@@ -37,6 +37,7 @@ webhook-embeds:
     color: "#FFFFFF"
 
 #Available placeholders
+
 #%currentEvent%
 #%nextEvent%
 #%nextEventTime%
@@ -60,15 +61,8 @@ Tasks:
     commands:
       - ""
       - ""
-
-
-  1:
-
-    event: "Envoy"
-    duration: 300
-    time: "12:00:30"
-    day: "TUE"
-    sound: "BLOCK_BELL_USE"
-    minPlayer: 15
-    commands:
-      - "say Hello players!"
+    subtasks:
+      subtask-1:
+        time: "12:00:20"
+        commands:
+          - "say 10 seconds left for Envoy!"

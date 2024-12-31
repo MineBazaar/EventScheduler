@@ -1,7 +1,7 @@
 package com.notpatch.eventScheduler.menu;
 
 import com.notpatch.eventScheduler.EventScheduler;
-import com.notpatch.eventScheduler.Task;
+import com.notpatch.eventScheduler.model.Task;
 import com.notpatch.eventScheduler.util.StringUtil;
 import fr.mrmicky.fastinv.FastInv;
 import fr.mrmicky.fastinv.ItemBuilder;
@@ -47,5 +47,5 @@ public class GuiEvent extends FastInv {
 
 
     }
-    
+
 }
