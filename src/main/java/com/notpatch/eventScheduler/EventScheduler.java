@@ -7,6 +7,7 @@ import com.notpatch.eventScheduler.manager.TaskManager;
 import com.notpatch.eventScheduler.task.ScheduleTask;
 import fr.mrmicky.fastinv.FastInvManager;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,6 +23,8 @@ public final class EventScheduler extends JavaPlugin {
         saveDefaultConfig();
         saveConfig();
 
+        Metrics metrics = new Metrics(this, 24035);
+
         if (usePlaceholderAPI()) {
             new HookPlaceholderAPI().register();
         }
@@ -36,7 +39,7 @@ public final class EventScheduler extends JavaPlugin {
 
         getCommand("eventscheduler").setExecutor(new CommandMain(this));
         getCommand("events").setExecutor(new CommandEvent());
-        
+
     }
 
     @Override

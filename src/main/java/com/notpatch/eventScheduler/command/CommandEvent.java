@@ -11,7 +11,11 @@ import org.jetbrains.annotations.NotNull;
 public class CommandEvent implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        new GuiEvent(EventScheduler.getInstance().getConfig().getString("menu-name")).open((Player) sender);
+        if (sender instanceof Player p) {
+            if (p.hasPermission("eventscheduler.menu")) {
+                new GuiEvent(EventScheduler.getInstance().getConfig().getString("menu-name")).open((Player) sender);
+            }
+        }
         return false;
     }
 }

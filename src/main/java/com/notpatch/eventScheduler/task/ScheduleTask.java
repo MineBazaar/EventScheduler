@@ -86,6 +86,7 @@ public class ScheduleTask extends BukkitRunnable {
         }
     }
 
+
     public void startRepeatingTask() {
         this.runTaskTimer(main, 0L, 1L);
     }

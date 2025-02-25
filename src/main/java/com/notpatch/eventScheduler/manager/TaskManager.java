@@ -6,18 +6,18 @@ import com.notpatch.eventScheduler.model.Task;
 import com.notpatch.eventScheduler.util.StringUtil;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class TaskManager {
 
     private final EventScheduler main;
 
-    private final List<String> executed = new ArrayList<>();
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("EEE");
+
+    public final List<String> executed = new ArrayList<>();
     private final HashMap<String, Task> tasks = new HashMap<>();
     private final List<Task> taskList = new ArrayList<>();
 
@@ -59,6 +59,15 @@ public class TaskManager {
 
     public HashMap<String, Task> getTasks() {
         return tasks;
+    }
+
+    public String getTaskId(Task task) {
+        for (String key : tasks.keySet()) {
+            if (tasks.get(key).equals(task)) {
+                return key;
+            }
+        }
+        return null;
     }
 
     public Task getTask(String key) {
@@ -130,6 +139,10 @@ public class TaskManager {
 
             LocalTime currentTime = LocalTime.now();
 
+            if (currentTime.isAfter(nextEventTime)) {
+                return "";
+            }
+
             long hours = Duration.between(currentTime, nextEventTime).toHours();
             long minutes = Duration.between(currentTime, nextEventTime).toMinutes() % 60;
             long seconds = Duration.between(currentTime, nextEventTime).getSeconds() % 60;
@@ -169,7 +182,9 @@ public class TaskManager {
 
     public void upcomingTasks() {
         for (Task task : main.getTaskManager().getTaskList()) {
-
+            if (!task.getDay().equalsIgnoreCase("Every") && !dayFormat.format(new Date()).equals(task.getDay())) {
+                return;
+            }
             for (SubTask subTask : task.getSubTasks()) {
                 LocalTime subTaskTime = LocalTime.parse(subTask.getTime());
                 LocalTime currentTime = LocalTime.now().withNano(0);
@@ -185,7 +200,22 @@ public class TaskManager {
         }
     }
 
+
+    public void startTask(String taskName) {
+        Task task = tasks.get(taskName);
+        if (task == null) return;
+
+        for (String command : task.getCommands()) {
+            main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
+        }
+    }
+
     public void resetExecuted() {
         executed.clear();
     }
+
+    public List<String> getExecuted() {
+        return executed;
+    }
+
 }
