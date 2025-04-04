@@ -1,5 +1,7 @@
 package com.notpatch.eventScheduler.model;
 
+import com.notpatch.eventScheduler.hook.DiscordWebhook;
+
 import java.util.List;
 
 public class Task {
@@ -12,8 +14,9 @@ public class Task {
     private final String time;
     private List<SubTask> subTasks;
     private List<String> commands;
+    private List<DiscordWebhook> webhooks;
 
-    public Task(String day, String sound, String event, int duration, int minPlayer, String time, List<String> commands, List<SubTask> subTasks) {
+    public Task(String day, String sound, String event, int duration, int minPlayer, String time, List<String> commands, List<SubTask> subTasks, List<DiscordWebhook> webhooks) {
         this.day = day;
         this.sound = sound;
         this.event = event;
@@ -22,6 +25,7 @@ public class Task {
         this.time = time;
         this.commands = commands;
         this.subTasks = subTasks;
+        this.webhooks = webhooks;
     }
 
     public String getDay() {
@@ -54,5 +58,13 @@ public class Task {
 
     public List<String> getCommands() {
         return commands;
+    }
+
+    public List<DiscordWebhook> getWebhooks() {
+        return webhooks;
+    }
+
+    public void setWebhooks(List<DiscordWebhook> webhooks) {
+        this.webhooks = webhooks;
     }
 }

@@ -3,7 +3,9 @@ package com.notpatch.eventScheduler;
 import com.notpatch.eventScheduler.command.CommandEvent;
 import com.notpatch.eventScheduler.command.CommandMain;
 import com.notpatch.eventScheduler.hook.HookPlaceholderAPI;
+import com.notpatch.eventScheduler.manager.ConfigurationManager;
 import com.notpatch.eventScheduler.manager.TaskManager;
+import com.notpatch.eventScheduler.manager.WebhookManager;
 import com.notpatch.eventScheduler.task.ScheduleTask;
 import fr.mrmicky.fastinv.FastInvManager;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
@@ -15,6 +17,9 @@ public final class EventScheduler extends JavaPlugin {
 
     private static EventScheduler instance;
     private TaskManager taskManager;
+
+    private ConfigurationManager configurationManager;
+    private WebhookManager webhookManager;
 
     @Override
     public void onEnable() {
@@ -28,6 +33,12 @@ public final class EventScheduler extends JavaPlugin {
         if (usePlaceholderAPI()) {
             new HookPlaceholderAPI().register();
         }
+
+        configurationManager = new ConfigurationManager();
+        configurationManager.loadConfigurations();
+
+        webhookManager = new WebhookManager(this);
+        webhookManager.loadWebhooks();
 
         taskManager = new TaskManager(this);
         taskManager.loadTasks();
@@ -44,7 +55,7 @@ public final class EventScheduler extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        configurationManager.saveConfigurations();
     }
 
 
@@ -64,5 +75,13 @@ public final class EventScheduler extends JavaPlugin {
 
     public TaskManager getTaskManager() {
         return taskManager;
+    }
+
+    public ConfigurationManager getConfigurationManager() {
+        return configurationManager;
+    }
+
+    public WebhookManager getWebhookManager() {
+        return webhookManager;
     }
 }

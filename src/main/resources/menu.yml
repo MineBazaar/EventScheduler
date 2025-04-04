@@ -1,0 +1,37 @@
+#Menu section
+menu-name: "&eEvents"
+menu-item: COMPASS
+menu-item-name: "&eTask &7| &e%taskId%"
+menu-item-lore:
+  - ""
+  - "&7Event: &e%eventName%"
+  - "&7Time: &e%eventTime%"
+  - ""
+
+menu-filler-item:
+  material: "GRAY_STAINED_GLASS_PANE"
+  name: " "
+  slots: [ 0,1,2,3,4,5,6,7,8,9,18,27,36,45,46,47,48,49,50,51,52,53,17,26,35,44 ]
+
+menu:
+  title: "&eEvents"
+  size: 54
+  items:
+    Event-1:
+      slot: 10
+      material: COMPASS
+      name: "&eEvent 1"
+      lore:
+        - ""
+        - "&7Event: &eHello"
+        - "&7Time: &e12:00:30"
+        - ""
+    Event-2:
+      slot: 13
+      material: DIAMOND
+      name: "&eEvent 2"
+      lore:
+        - ""
+        - "&7Event: &eHello 2"
+        - "&7Time: &e15:00:30"
+        - ""

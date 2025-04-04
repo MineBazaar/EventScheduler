@@ -3,46 +3,6 @@ DateFormat: "HH:mm:ss"
 UsePlaceholderAPI: true
 MinPlayerMessage: "#000000For event %eventName% to start a minimum of %playerAmount% players must be online."
 
-#Menu section
-menu-name: "&eEvents"
-menu-item: COMPASS
-menu-item-name: "&eTask &7| &e%taskId%"
-menu-item-lore:
-  - ""
-  - "&7Event: &e%eventName%"
-  - "&7Time: &e%eventTime%"
-  - ""
-
-menu-filler-item:
-  material: "GRAY_STAINED_GLASS_PANE"
-  name: " "
-  slots: [ 0,1,2,3,4,5,6,7,8,9,18,27,36,45,46,47,48,49,50,51,52,53,17,26,35,44 ]
-
-#Discord Webhook
-#When event started
-send-webhook: false
-#Discord Server Settings -> Integrations -> Webhooks -> Select or create new webhook -> Copy webhook url -> Paste
-webhook-url: ""
-webhook-avatarURL: ""
-webhook-content: "Test Content"
-webhook-embeds:
-  0:
-    description: "Test Description"
-    title: "Test Title"
-    field:
-      name: "TestName"
-      value: "TestValue"
-      inline: true
-    #RGB color, use # first
-    color: "#FFFFFF"
-
-#Available placeholders
-
-#%currentEvent%
-#%nextEvent%
-#%nextEventTime%
-#%nextEventCountdown%
-
 Tasks:
   0:
     #Event and Duration for placeholders
@@ -61,8 +21,12 @@ Tasks:
     commands:
       - ""
       - ""
+    webhooks:
+      - webhook1
     subtasks:
       subtask-1:
         time: "12:00:20"
         commands:
           - "say 10 seconds left for Envoy!"
+        webhooks:
+          - webhook2

@@ -1,11 +1,13 @@
 package com.notpatch.eventScheduler.manager;
 
 import com.notpatch.eventScheduler.EventScheduler;
+import com.notpatch.eventScheduler.hook.DiscordWebhook;
 import com.notpatch.eventScheduler.model.SubTask;
 import com.notpatch.eventScheduler.model.Task;
 import com.notpatch.eventScheduler.util.StringUtil;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -27,8 +29,10 @@ public class TaskManager {
 
     public void loadTasks() {
         tasks.clear();
-        ConfigurationSection tasksSection = main.getConfig().getConfigurationSection("Tasks");
+        taskList.clear();
+        executed.clear();
 
+        ConfigurationSection tasksSection = main.getConfig().getConfigurationSection("Tasks");
         if (tasksSection == null) return;
 
         for (String s : tasksSection.getKeys(false)) {
@@ -40,22 +44,42 @@ public class TaskManager {
             String taskTime = tasksSection.getString(s + ".time");
             List<String> commands = tasksSection.getStringList(s + ".commands");
 
+            List<DiscordWebhook> webhooks = new ArrayList<>();
+            List<String> webhookIds = tasksSection.getStringList(s + ".webhooks");
+
+            for (String webhookId : webhookIds) {
+                DiscordWebhook webhook = main.getWebhookManager().getWebhooks().get(webhookId);
+                if (webhook != null) {
+                    webhooks.add(webhook);
+                }
+            }
             List<SubTask> subTasks = new ArrayList<>();
             ConfigurationSection subTasksSection = tasksSection.getConfigurationSection(s + ".subtasks");
             if (subTasksSection != null) {
                 for (String subKey : subTasksSection.getKeys(false)) {
                     String subTime = subTasksSection.getString(subKey + ".time");
                     List<String> subCommands = subTasksSection.getStringList(subKey + ".commands");
-                    subTasks.add(new SubTask(subTime, subCommands));
+                    List<DiscordWebhook> subWebhooks = new ArrayList<>();
+                    List<String> subWebhookIds = subTasksSection.getStringList(subKey + ".webhooks");
+                    for (String subWebhookId : subWebhookIds) {
+                        DiscordWebhook webhook = main.getWebhookManager().getWebhooks().get(subWebhookId);
+                        if (webhook != null) {
+                            subWebhooks.add(webhook);
+                        }
+                    }
+                    subTasks.add(new SubTask(subTime, subCommands, subWebhooks));
                 }
             }
 
             if (day != null && event != null && duration != -1) {
-                tasks.put(s, new Task(day, sound, event, duration, minPlayer, taskTime, commands, subTasks));
+                Task task = new Task(day, sound, event, duration, minPlayer, taskTime, commands, subTasks, webhooks);
+                tasks.put(s, task);
             }
         }
+
         tasks.forEach((key, value) -> taskList.add(value));
     }
+
 
     public HashMap<String, Task> getTasks() {
         return tasks;
@@ -191,8 +215,17 @@ public class TaskManager {
                 if (executed.contains(subTask.getTime())) continue;
 
                 if (currentTime.equals(subTaskTime)) {
+
                     for (String command : subTask.getCommands()) {
                         main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
+                    }
+
+                    for (DiscordWebhook discordWebhook : subTask.getWebhooks()) {
+                        try {
+                            discordWebhook.execute();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                     executed.add(subTask.getTime());
                 }
@@ -208,6 +241,14 @@ public class TaskManager {
 
         for (String command : task.getCommands()) {
             main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
+        }
+
+        for (DiscordWebhook discordWebhook : task.getWebhooks()) {
+            try {
+                discordWebhook.execute();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

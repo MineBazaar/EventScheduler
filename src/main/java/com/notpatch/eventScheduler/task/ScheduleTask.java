@@ -1,13 +1,14 @@
 package com.notpatch.eventScheduler.task;
 
 import com.notpatch.eventScheduler.EventScheduler;
+import com.notpatch.eventScheduler.hook.DiscordWebhook;
 import com.notpatch.eventScheduler.model.Task;
-import com.notpatch.eventScheduler.util.DiscordUtil;
 import com.notpatch.eventScheduler.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -60,7 +61,13 @@ public class ScheduleTask extends BukkitRunnable {
                                 player.playSound(player.getLocation(), Sound.valueOf(task.getSound()), 1F, 1F)
                         );
                     }
-                    DiscordUtil.sendDiscordWebhook();
+                    for (DiscordWebhook discordWebhook : task.getWebhooks()) {
+                        try {
+                            discordWebhook.execute();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                     for (String command : task.getCommands()) {
                         if (command == null || command.isEmpty()) {
                             break;
