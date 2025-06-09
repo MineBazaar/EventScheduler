@@ -1,13 +1,4 @@
 #Menu section
-menu-name: "&eEvents"
-menu-item: COMPASS
-menu-item-name: "&eTask &7| &e%taskId%"
-menu-item-lore:
-  - ""
-  - "&7Event: &e%eventName%"
-  - "&7Time: &e%eventTime%"
-  - ""
-
 menu-filler-item:
   material: "GRAY_STAINED_GLASS_PANE"
   name: " "

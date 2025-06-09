@@ -1,16 +1,17 @@
 package com.notpatch.eventScheduler.hook;
 
+import com.notpatch.eventScheduler.EventScheduler;
+import com.notpatch.eventScheduler.util.NLogger;
+import org.bukkit.Bukkit;
+
 import javax.net.ssl.HttpsURLConnection;
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class used to execute Discord Webhooks with low effort
@@ -139,20 +140,27 @@ public class DiscordWebhook {
             json.put("embeds", embedObjects.toArray());
         }
 
-        URL url = new URL(this.url);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
+        Bukkit.getScheduler().runTaskAsynchronously(EventScheduler.getInstance(), () -> {
+            try {
+                URI uri = new URI(this.url);
+                HttpsURLConnection connection = (HttpsURLConnection) uri.toURL().openConnection();
+                connection.setRequestMethod("POST");
+                connection.addRequestProperty("Content-Type", "application/json");
+                connection.setDoOutput(true);
 
-        OutputStream stream = connection.getOutputStream();
-        stream.write(json.toString().getBytes());
-        stream.flush();
-        stream.close();
 
-        connection.getInputStream().close(); //I'm not sure why but it doesn't work without getting the InputStream
-        connection.disconnect();
+                OutputStream stream = connection.getOutputStream();
+                stream.write(json.toString().getBytes());
+                stream.flush();
+                stream.close();
+
+                connection.getResponseCode();
+                connection.disconnect();
+            } catch (Exception exception) {
+                NLogger.warn("Failed to send Discord webhook: " + exception.getMessage());
+            }
+        });
+
     }
 
     public static class EmbedObject {

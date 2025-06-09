@@ -7,6 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 public abstract class NConfiguration extends YamlConfiguration {
 
@@ -25,8 +27,12 @@ public abstract class NConfiguration extends YamlConfiguration {
     private void checkConfig() {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
-            try {
-                file.createNewFile();
+            try (InputStream inputStream = main.getResource(name)) {
+                if (inputStream != null) {
+                    Files.copy(inputStream, file.toPath());
+                } else {
+                    file.createNewFile();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

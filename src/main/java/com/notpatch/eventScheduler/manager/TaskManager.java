@@ -94,6 +94,15 @@ public class TaskManager {
         return null;
     }
 
+    public Task getTaskByName(String name) {
+        for (String task : tasks.keySet()) {
+            if (task.equalsIgnoreCase(name)) {
+                return tasks.get(task);
+            }
+        }
+        return null;
+    }
+
     public Task getTask(String key) {
         return tasks.get(key);
     }
@@ -177,8 +186,27 @@ public class TaskManager {
         return "";
     }
 
+    public String getTaskCountdown(Task task) {
+        if (task == null) return "";
+        String taskTime = task.getTime();
+        LocalTime taskEventTime = LocalTime.parse(taskTime);
+
+        LocalTime currentTime = LocalTime.now();
+
+        if (currentTime.isAfter(taskEventTime)) {
+            return "";
+        }
+
+        long hours = Duration.between(currentTime, taskEventTime).toHours();
+        long minutes = Duration.between(currentTime, taskEventTime).toMinutes() % 60;
+        long seconds = Duration.between(currentTime, taskEventTime).getSeconds() % 60;
+        long millis = Duration.between(currentTime, taskEventTime).toMillis() % 1000;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds, millis);
+    }
+
     public Task getNextTask() {
-        List<Task> taskList = main.getTaskManager().getTaskList();
+        List<Task> taskList = getTaskList();
         if (taskList == null || taskList.isEmpty()) {
             return null;
         }
@@ -217,6 +245,7 @@ public class TaskManager {
                 if (currentTime.equals(subTaskTime)) {
 
                     for (String command : subTask.getCommands()) {
+                        if (command == null || command.isEmpty()) continue;
                         main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
                     }
 
@@ -239,15 +268,20 @@ public class TaskManager {
         Task task = tasks.get(taskName);
         if (task == null) return;
 
-        for (String command : task.getCommands()) {
-            main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
+
+        if (task.getCommands() != null && !task.getCommands().isEmpty()) {
+            for (String command : task.getCommands()) {
+                main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
+            }
         }
 
-        for (DiscordWebhook discordWebhook : task.getWebhooks()) {
-            try {
-                discordWebhook.execute();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if (task.getWebhooks() != null && !task.getWebhooks().isEmpty()) {
+            for (DiscordWebhook discordWebhook : task.getWebhooks()) {
+                try {
+                    discordWebhook.execute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

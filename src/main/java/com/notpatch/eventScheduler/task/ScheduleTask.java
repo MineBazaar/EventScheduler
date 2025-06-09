@@ -61,22 +61,27 @@ public class ScheduleTask extends BukkitRunnable {
                                 player.playSound(player.getLocation(), Sound.valueOf(task.getSound()), 1F, 1F)
                         );
                     }
-                    for (DiscordWebhook discordWebhook : task.getWebhooks()) {
-                        try {
-                            discordWebhook.execute();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                    if (task.getWebhooks() != null && !task.getWebhooks().isEmpty()) {
+                        for (DiscordWebhook discordWebhook : task.getWebhooks()) {
+                            try {
+                                discordWebhook.execute();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
-                    for (String command : task.getCommands()) {
-                        if (command == null || command.isEmpty()) {
+                    if (task.getCommands() != null && !task.getCommands().isEmpty()) {
+                        for (String command : task.getCommands()) {
+                            if (command == null || command.isEmpty()) {
+                                continue;
+                            }
+
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), StringUtil.FormatString(command));
+
                             break;
                         }
-
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), StringUtil.FormatString(command));
-
-                        break;
                     }
+
                     main.getTaskManager().resetExecuted();
 
                     new BukkitRunnable() {
