@@ -1,8 +1,11 @@
 #Default date format is "HH:mm:ss"
 DateFormat: "HH:mm:ss"
+placeholder-api:
+  enabled: true
+  no-event: "No Event"
+
 UsePlaceholderAPI: true
 MinPlayerMessage: "#000000For event %eventName% to start a minimum of %playerAmount% players must be online."
-
 Tasks:
   0:
     #Event and Duration for placeholders

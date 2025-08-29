@@ -60,7 +60,7 @@ public final class EventScheduler extends JavaPlugin {
 
 
     private boolean usePlaceholderAPI() {
-        if (getConfig().getBoolean("UsePlaceholderAPI")) {
+        if (getConfig().getBoolean("placeholder-api.enabled")) {
             Plugin plugin = getServer().getPluginManager().getPlugin("PlaceholderAPI");
             if (plugin != null || (plugin instanceof PlaceholderAPIPlugin)) {
                 return true;
