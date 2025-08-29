@@ -45,6 +45,7 @@ public class WebhookManager {
                 }
 
 
+
                 ConfigurationSection embeds = config.getConfigurationSection(path + ".embeds");
                 if (embeds != null) {
                     for (String embedId : embeds.getKeys(false)) {
@@ -61,6 +62,9 @@ public class WebhookManager {
                         embed.setTitle(config.getString(base + ".title", ""));
                         embed.setDescription(config.getString(base + ".description", ""));
                         embed.setUrl(config.getString(base + ".URL", ""));
+                        embed.setImage(config.getString(base + ".imageURL", ""));
+                        embed.setFooter(config.getString(base + ".footer.text", ""), config.getString(base + ".footer.iconURL", ""));
+                        embed.setThumbnail(config.getString(base + ".thumbnailURL", ""));
                         embed.setImage(config.getString(base + ".imageURL", ""));
 
                         String fieldName = config.getString(base + ".field.name");

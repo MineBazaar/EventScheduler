@@ -8,20 +8,11 @@ webhooks:
       0:
         description: "Event has started!"
         title: "Event Title"
-        field:
-          name: "Field Name"
-          value: "Field Value"
-          inline: true
-        color: "#FF0000"
-  webhook2:
-    #Discord Server Settings -> Integrations -> Webhooks -> Select or create new webhook -> Copy webhook url -> Paste
-    url: "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz"
-    avatarURL: "https://example.com/avatar.png"
-    content: "Event 2 started!"
-    embeds:
-      0:
-        description: "Event 2 has started!"
-        title: "Event 2 Title"
+        thumbnail-URL: "https://example.com/thumbnail.png"
+        URL: "https://example.com"
+        footer:
+          text: "Footer Text"
+          iconURL: "https://example.com/footer-icon.png"
         field:
           name: "Field Name"
           value: "Field Value"
