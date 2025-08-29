@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class TaskManager {
@@ -80,7 +83,6 @@ public class TaskManager {
         tasks.forEach((key, value) -> taskList.add(value));
     }
 
-
     public HashMap<String, Task> getTasks() {
         return tasks;
     }
@@ -117,92 +119,82 @@ public class TaskManager {
         return task.getTime();
     }
 
-    private long parseTimeToMillis(String time, String day) {
-        try {
-            String[] timeParts = time.split(":");
-            int hours = Integer.parseInt(timeParts[0]);
-            int minutes = Integer.parseInt(timeParts[1]);
-            int seconds = Integer.parseInt(timeParts[2]);
-
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, hours);
-            cal.set(Calendar.MINUTE, minutes);
-            cal.set(Calendar.SECOND, seconds);
-
-            switch (day.toUpperCase()) {
-                case "MON":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-                    break;
-                case "TUE":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-                    break;
-                case "WED":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-                    break;
-                case "THU":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-                    break;
-                case "FRI":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-                    break;
-                case "SAT":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-                    break;
-                case "SUN":
-                    cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-                    break;
-                case "EVERY":
-                    break;
-                default:
-                    break;
-            }
-
-            return cal.getTimeInMillis();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
+    private DayOfWeek getDayOfWeek(String day) {
+        switch (day.toUpperCase()) {
+            case "MON": return DayOfWeek.MONDAY;
+            case "TUE": return DayOfWeek.TUESDAY;
+            case "WED": return DayOfWeek.WEDNESDAY;
+            case "THU": return DayOfWeek.THURSDAY;
+            case "FRI": return DayOfWeek.FRIDAY;
+            case "SAT": return DayOfWeek.SATURDAY;
+            case "SUN": return DayOfWeek.SUNDAY;
+            default: return null;
         }
+    }
+
+    private LocalDateTime getNextOccurrence(String day, LocalTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime todayAtTime = now.toLocalDate().atTime(time);
+
+        if (day.equalsIgnoreCase("EVERY")) {
+            if (now.isBefore(todayAtTime)) {
+                return todayAtTime;
+            } else {
+                return todayAtTime.plusDays(1);
+            }
+        }
+
+        DayOfWeek targetDay = getDayOfWeek(day);
+        if (targetDay == null) return null;
+
+        LocalDate today = LocalDate.now();
+        LocalDate nextDate = today;
+
+        while (nextDate.getDayOfWeek() != targetDay) {
+            nextDate = nextDate.plusDays(1);
+        }
+
+        LocalDateTime nextDateTime = nextDate.atTime(time);
+
+        if (nextDate.equals(today) && now.isAfter(nextDateTime)) {
+            nextDateTime = nextDateTime.plusWeeks(1);
+        }
+
+        return nextDateTime;
     }
 
     public String getNextTaskCountdown() {
         Task nextTask = getNextTask();
-        if (nextTask != null) {
-            String taskTime = nextTask.getTime();
-            LocalTime nextEventTime = LocalTime.parse(taskTime);
+        if (nextTask == null) return "";
 
-            LocalTime currentTime = LocalTime.now();
-
-            if (currentTime.isAfter(nextEventTime)) {
-                return "";
-            }
-
-            long hours = Duration.between(currentTime, nextEventTime).toHours();
-            long minutes = Duration.between(currentTime, nextEventTime).toMinutes() % 60;
-            long seconds = Duration.between(currentTime, nextEventTime).getSeconds() % 60;
-            long millis = Duration.between(currentTime, nextEventTime).toMillis() % 1000;
-
-            return String.format("%02d:%02d:%02d", hours, minutes, seconds, millis);
-        }
-        return "";
+        return getTaskCountdown(nextTask);
     }
 
     public String getTaskCountdown(Task task) {
-        if (task == null) return "";
-        String taskTime = task.getTime();
-        LocalTime taskEventTime = LocalTime.parse(taskTime);
+        if (task == null || task.getTime() == null) return "";
 
-        LocalTime currentTime = LocalTime.now();
+        try {
+            LocalTime taskTime = LocalTime.parse(task.getTime());
+            LocalDateTime nextOccurrence = getNextOccurrence(task.getDay(), taskTime);
 
-        if (currentTime.isAfter(taskEventTime)) {
+            if (nextOccurrence == null) return "";
+
+            LocalDateTime now = LocalDateTime.now();
+            Duration duration = Duration.between(now, nextOccurrence);
+
+            if (duration.isNegative()) return "";
+
+            long totalSeconds = duration.getSeconds();
+            long hours = totalSeconds / 3600;
+            long minutes = (totalSeconds % 3600) / 60;
+            long seconds = totalSeconds % 60;
+
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return "";
         }
-
-        long hours = Duration.between(currentTime, taskEventTime).toHours();
-        long minutes = Duration.between(currentTime, taskEventTime).toMinutes() % 60;
-        long seconds = Duration.between(currentTime, taskEventTime).getSeconds() % 60;
-        long millis = Duration.between(currentTime, taskEventTime).toMillis() % 1000;
-
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds, millis);
     }
 
     public Task getNextTask() {
@@ -212,20 +204,25 @@ public class TaskManager {
         }
 
         Task nearestTask = null;
-        long nearestTimeDifference = Long.MAX_VALUE;
-
-        long currentTimeMillis = System.currentTimeMillis();
+        LocalDateTime nearestDateTime = null;
+        LocalDateTime now = LocalDateTime.now();
 
         for (Task task : taskList) {
             String taskTime = task.getTime();
-            String day = task.getDay();
-            long taskTimeMillis = parseTimeToMillis(taskTime, day);
+            if (taskTime == null) continue;
 
-            long timeDifference = Math.abs(taskTimeMillis - currentTimeMillis);
+            try {
+                LocalTime time = LocalTime.parse(taskTime);
+                LocalDateTime nextOccurrence = getNextOccurrence(task.getDay(), time);
 
-            if (timeDifference < nearestTimeDifference) {
-                nearestTimeDifference = timeDifference;
-                nearestTask = task;
+                if (nextOccurrence != null && nextOccurrence.isAfter(now)) {
+                    if (nearestDateTime == null || nextOccurrence.isBefore(nearestDateTime)) {
+                        nearestDateTime = nextOccurrence;
+                        nearestTask = task;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -234,40 +231,45 @@ public class TaskManager {
 
     public void upcomingTasks() {
         for (Task task : main.getTaskManager().getTaskList()) {
-            if (!task.getDay().equalsIgnoreCase("Every") && !dayFormat.format(new Date()).equals(task.getDay())) {
-                return;
+            if (!task.getDay().equalsIgnoreCase("Every")) {
+                String currentDay = dayFormat.format(new Date()).toUpperCase();
+                if (!currentDay.equals(task.getDay().substring(0, 3).toUpperCase())) {
+                    continue;
+                }
             }
+
             for (SubTask subTask : task.getSubTasks()) {
-                LocalTime subTaskTime = LocalTime.parse(subTask.getTime());
-                LocalTime currentTime = LocalTime.now().withNano(0);
-                if (executed.contains(subTask.getTime())) continue;
+                try {
+                    LocalTime subTaskTime = LocalTime.parse(subTask.getTime());
+                    LocalTime currentTime = LocalTime.now().withNano(0);
 
-                if (currentTime.equals(subTaskTime)) {
+                    if (executed.contains(subTask.getTime())) continue;
 
-                    for (String command : subTask.getCommands()) {
-                        if (command == null || command.isEmpty()) continue;
-                        main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
-                    }
-
-                    for (DiscordWebhook discordWebhook : subTask.getWebhooks()) {
-                        try {
-                            discordWebhook.execute();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                    if (currentTime.equals(subTaskTime)) {
+                        for (String command : subTask.getCommands()) {
+                            if (command == null || command.isEmpty()) continue;
+                            main.getServer().dispatchCommand(main.getServer().getConsoleSender(), command);
                         }
+
+                        for (DiscordWebhook discordWebhook : subTask.getWebhooks()) {
+                            try {
+                                discordWebhook.execute();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        executed.add(subTask.getTime());
                     }
-                    executed.add(subTask.getTime());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-    //
-
     public void startTask(String taskName) {
         Task task = tasks.get(taskName);
         if (task == null) return;
-
 
         if (task.getCommands() != null && !task.getCommands().isEmpty()) {
             for (String command : task.getCommands()) {
@@ -293,5 +295,4 @@ public class TaskManager {
     public List<String> getExecuted() {
         return executed;
     }
-
 }
